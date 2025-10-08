@@ -342,7 +342,7 @@ export default function NavigationScreen({ route }: NavigationScreenProps) {
                     // Use the exact same method that works in HomeScreen
                     console.log('🚀 Using navigation.replace (same as HomeScreen line 1231)...');
                     try {
-                      navigation.replace('Home');
+        navigation.replace('Home');
                       console.log('✅ navigation.replace successful');
                       
                       // Verify navigation worked
@@ -512,45 +512,6 @@ export default function NavigationScreen({ route }: NavigationScreenProps) {
             }}
             showIcon={false}
           />
-          
-          {/* Test Navigation Button */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#007AFF',
-              borderRadius: 20,
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              marginTop: 8,
-              alignItems: 'center'
-            }}
-            onPress={() => {
-              console.log('🧪 Test navigation button pressed');
-              console.log('🔍 Current navigation state:', navigation.getState());
-              console.log('🔍 Available routes:', navigation.getState()?.routes?.map(r => r.name));
-              
-              // CRITICAL FIX: Reset driver status to clear acceptedRideDetails
-              console.log('🔄 Resetting driver status to clear acceptedRideDetails...');
-              resetDriverStatus();
-              
-              // Use the exact same method that works in HomeScreen
-              console.log('🚀 Using navigation.replace (same as HomeScreen line 1231)...');
-              try {
-                navigation.replace('Home');
-                console.log('✅ navigation.replace successful');
-                
-                // Verify navigation worked
-                setTimeout(() => {
-                  console.log('🔍 Navigation state after replace:', navigation.getState());
-                }, 100);
-                
-              } catch (error) {
-                console.error('❌ navigation.replace failed:', error);
-                console.log('🔍 Error details:', error);
-              }
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Test Go Home</Text>
-          </TouchableOpacity>
 
         </View>
 
