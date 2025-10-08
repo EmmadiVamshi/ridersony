@@ -283,7 +283,7 @@ export default function NavigationScreen({ route }: NavigationScreenProps) {
         console.log('✅ Driver cancellation success received in NavigationScreen:', data);
         // Navigate to home screen after successful cancellation
         // Use replace instead of navigate to prevent going back to this screen
-        navigation.replace('Home');
+        navigation.navigate('Home');
       };
 
       const handleRideCancelled = (data: any) => {
@@ -342,7 +342,7 @@ export default function NavigationScreen({ route }: NavigationScreenProps) {
                     // Use the exact same method that works in HomeScreen
                     console.log('🚀 Using navigation.replace (same as HomeScreen line 1231)...');
                     try {
-        navigation.replace('Home');
+        navigation.navigate('Home');
                       console.log('✅ navigation.replace successful');
                       
                       // Verify navigation worked
@@ -497,7 +497,7 @@ export default function NavigationScreen({ route }: NavigationScreenProps) {
             onSuccess={() => {
               console.log('🔄 Driver cancelled ride - resetting status and navigating to Home...');
               resetDriverStatus();
-              navigation.replace('Home');
+              navigation.navigate('Home');
             }}
             style={{ 
               backgroundColor: '#ff4757', 
