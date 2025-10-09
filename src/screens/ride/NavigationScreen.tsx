@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity, Animated, Alert, Dimensions, Linking, Sta
 import MapView, { Marker, Polyline as MapPolyline } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import Polyline from '@mapbox/polyline';
 import { RideRequest, stopAllNotificationSounds } from '../../components/RideRequestScreen';
 import socketManager from '../../utils/socket';
 import LocationTrackingService from '../../services/locationTrackingService';
+import { useOnlineStatus } from '../../store/OnlineStatusContext';
 import CancelRideButton from '../../components/CancelRideButton';
 
 const { width } = Dimensions.get('window');
@@ -48,11 +50,13 @@ const getFallbackCoordinates = (address: string) => ({ lat: 17.4375, lng: 78.448
 
 interface NavigationScreenProps {
   route: any;
-  navigation: any;
 }
 
-export default function NavigationScreen({ route, navigation }: NavigationScreenProps) {
+export default function NavigationScreen({ route }: NavigationScreenProps) {
   const { ride } = route.params;
+  const navigation = useNavigation<NavigationProp<any>>(); // Using hook like HomeScreen
+  const { resetDriverStatus } = useOnlineStatus(); // Get resetDriverStatus function
+  const [forceRefresh, setForceRefresh] = useState(0);
   
   console.log('🚗 NavigationScreen received ride data:', ride);
   console.log('🚗 rideId:', ride?.rideId);
@@ -268,26 +272,115 @@ export default function NavigationScreen({ route, navigation }: NavigationScreen
   // Listen for driver cancellation success
   useEffect(() => {
     const socket = socketManager.getSocket();
+    console.log('🔍 NavigationScreen useEffect - Socket available:', !!socket);
+    console.log('🔍 NavigationScreen useEffect - Socket connected:', socket?.connected);
+    console.log('🔍 NavigationScreen useEffect - Socket ID:', socket?.id);
+    console.log('🔍 NavigationScreen useEffect - Ride ID:', ride?.rideId);
+    console.log('🔍 NavigationScreen useEffect - Driver ID:', ride?.driverId);
+    
     if (socket) {
       const handleDriverCancellationSuccess = (data: any) => {
         console.log('✅ Driver cancellation success received in NavigationScreen:', data);
         // Navigate to home screen after successful cancellation
         // Use replace instead of navigate to prevent going back to this screen
-        navigation.replace('Home');
+        navigation.navigate('Home');
       };
 
       const handleRideCancelled = (data: any) => {
-        console.log('❌ Ride cancelled event received in NavigationScreen:', data);
-        // Also handle the general ride_cancelled event
-        navigation.replace('Home');
+        console.log('❌ Ride cancelled event received in NavigationScreen (user cancelled):', data);
+        console.log('🔍 Current ride ID:', ride?.rideId);
+        console.log('🔍 Event ride ID:', data.rideId);
+        console.log('🔍 Socket connected:', socket.connected);
+        console.log('🔍 Socket ID:', socket.id);
+        
+        if (data.rideId === ride?.rideId) {
+          console.log('✅ User cancelled ride, resetting driver status and navigating to Home screen');
+          
+          // Stop location tracking
+          if (locationSubscription.current) {
+            locationSubscription.current.remove();
+            locationSubscription.current = null;
+          }
+          
+          // Stop notification sounds
+          stopAllNotificationSounds();
+          
+          // Send driver status as online (user cancellation doesn't penalize driver)
+          socketManager.sendDriverStatus({
+            driverId: ride.driverId,
+            status: 'online'
+          });
+          
+          console.log('✅ Driver status reset to online after user cancellation');
+          
+          // Show alert to user about cancellation and navigate after acknowledgment
+          Alert.alert(
+            'Ride Cancelled',
+            'The user has cancelled the ride. You are being redirected to the home screen.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  console.log('🚀 User acknowledged cancellation, proceeding with navigation...');
+                  
+                  // Force a state refresh to ensure clean navigation
+                  setForceRefresh(prev => prev + 1);
+                  
+                  // CRITICAL FIX: Reset driver status to clear acceptedRideDetails
+                  console.log('🔄 Resetting driver status to clear acceptedRideDetails...');
+                  resetDriverStatus();
+                  
+                  // Navigate to home screen after user acknowledges cancellation
+                  console.log('🚀 Starting navigation process...');
+                  console.log('🔍 Current navigation state:', navigation.getState());
+                  
+                  // Use a more aggressive navigation approach
+                  setTimeout(() => {
+                    console.log('🚀 Attempting navigation with reset...');
+                    console.log('🔍 Available routes:', navigation.getState()?.routes?.map(r => r.name));
+                    
+                    // Use the exact same method that works in HomeScreen
+                    console.log('🚀 Using navigation.replace (same as HomeScreen line 1231)...');
+                    try {
+        navigation.navigate('Home');
+                      console.log('✅ navigation.replace successful');
+                      
+                      // Verify navigation worked
+                      setTimeout(() => {
+                        console.log('🔍 Navigation state after replace:', navigation.getState());
+                      }, 100);
+                      
+                    } catch (error) {
+                      console.error('❌ navigation.replace failed:', error);
+                      console.log('🔍 Error details:', error);
+                    }
+                  }, 200); // Increased delay for better reliability
+                }
+              }
+            ]
+          );
+        } else {
+          console.log('🚫 Ride ID mismatch - ignoring cancellation event');
+        }
+      };
+
+      // Test event listener to verify socket is working
+      const handleTestEvent = (data: any) => {
+        console.log('🧪 Test event received in NavigationScreen:', data);
       };
 
       socket.on('driver_cancellation_success', handleDriverCancellationSuccess);
       socket.on('ride_cancelled', handleRideCancelled);
+      socket.on('test_response', handleTestEvent);
+
+      // Send a test event to verify connection
+      console.log('🧪 Sending test event from NavigationScreen');
+      socket.emit('test_event', { message: 'NavigationScreen test', rideId: ride?.rideId });
 
       return () => {
         socket.off('driver_cancellation_success', handleDriverCancellationSuccess);
         socket.off('ride_cancelled', handleRideCancelled);
+        socket.off('test_response', handleTestEvent);
       };
     }
   }, [navigation]);
@@ -401,7 +494,11 @@ export default function NavigationScreen({ route, navigation }: NavigationScreen
               dropoffAddress: ride.dropoffAddress,
               price: ride.price,
             }}
-            onSuccess={() => navigation.navigate('Home')}
+            onSuccess={() => {
+              console.log('🔄 Driver cancelled ride - resetting status and navigating to Home...');
+              resetDriverStatus();
+              navigation.navigate('Home');
+            }}
             style={{ 
               backgroundColor: '#ff4757', 
               borderRadius: 20, 

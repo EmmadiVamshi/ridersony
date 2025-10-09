@@ -62,7 +62,7 @@ export default function OtpScreen({ route, navigation }: OtpScreenProps) {
         }
         setIsWaitingForRideStarted(false);
         // Navigate to home screen after successful cancellation
-        navigation.navigate('Home');
+        navigation.replace('Home');
       };
 
       const handleRideStarted = (data: any) => {
@@ -79,6 +79,7 @@ export default function OtpScreen({ route, navigation }: OtpScreenProps) {
           navigation.navigate('RideInProgressScreen', { ride });
         }
       };
+
 
       // Listen for socket connection status changes
       const handleConnect = () => {
@@ -344,7 +345,7 @@ export default function OtpScreen({ route, navigation }: OtpScreenProps) {
               dropoffAddress: ride.dropoffAddress,
               price: ride.price,
             }}
-            onSuccess={() => navigation.navigate('Home')}
+            onSuccess={() => navigation.replace('Home')}
             style={{ 
               backgroundColor: '#ff4757', 
               paddingHorizontal: 12, 

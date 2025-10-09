@@ -365,6 +365,42 @@ export const OnlineStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   }, [driverId]);
 
+  // Listen for user cancellation (ride_cancelled event) - Global handler
+  useEffect(() => {
+    const socket = socketManager.getSocket();
+    if (socket) {
+      const handleUserCancellation = (data: any) => {
+        console.log('❌ Global user cancellation handler - resetting driver status:', data);
+        // Reset all driver state when user cancels
+        setAcceptedRideDetails(null);
+        setCurrentRideRequests([]); // Clear all ride requests on user cancellation
+        setAcceptingRideId(null);
+        setProcessedRideIds(new Set());
+        
+        // Clear current ride request from location tracking service
+        locationTrackingService.setCurrentRideRequest(null);
+        
+        // Stop notification sounds when user cancels
+        stopAllNotificationSounds();
+        
+        // Send driver status as online (user cancellation doesn't penalize driver)
+        socketManager.sendDriverStatus({
+          driverId,
+          status: 'online'
+        });
+        
+        console.log('✅ Global driver status reset to online after user cancellation');
+      };
+
+      socket.on('ride_cancelled', handleUserCancellation);
+
+      return () => {
+        socket.off('ride_cancelled', handleUserCancellation);
+      };
+    }
+  }, [driverId]);
+
+
   // Send driver status when going online
   useEffect(() => {
     socketManager.sendDriverStatus({

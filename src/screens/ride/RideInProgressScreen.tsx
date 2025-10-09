@@ -263,8 +263,9 @@ export default function RideInProgressScreen({ route, navigation }: RideInProgre
       const handleDriverCancellationSuccess = (data: any) => {
         console.log('✅ Driver cancellation success received in RideInProgressScreen:', data);
         // Navigate to home screen after successful cancellation
-        navigation.navigate('Home');
+        navigation.replace('Home');
       };
+
 
       socket.on('driver_cancellation_success', handleDriverCancellationSuccess);
 

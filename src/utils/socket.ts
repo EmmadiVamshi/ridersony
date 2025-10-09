@@ -386,7 +386,9 @@ class SocketManager {
 
     // Handle ride cancelled
     this.socket.on('ride_cancelled', (data) => {
-      console.log('❌ Ride cancelled:', data);
+      console.log('❌ Ride cancelled event received in SocketManager:', data);
+      console.log('🔍 Socket connected:', this.socket?.connected);
+      console.log('🔍 Socket ID:', this.socket?.id);
       this.onRideStatusUpdateCallback?.(data);
     });
 
