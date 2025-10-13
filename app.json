@@ -21,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.roqet.driverapp",
+      "package": "com.roqet.pilotapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Mainlogo.jpeg",
         "backgroundColor": "#ffffff"
