@@ -76,12 +76,6 @@ export default function SettingsScreen({ navigation }: any) {
         //   value: locationServices,
         //   onToggle: setLocationServices,
         // },
-        {
-          icon: 'card-outline',
-          title: 'Auto Payment',
-          subtitle: 'Automatically pay for rides',
-          action: () => navigation.navigate('AutoPayment'),
-        },
       ],
     },
     {
