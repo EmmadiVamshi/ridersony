@@ -81,7 +81,7 @@ The socket connection is now configured to:
 
 1. **User Type**: Driver app uses 'driver' as user type instead of 'customer'
 2. **Socket Events**: Driver app listens for different events (ride requests, driver status updates)
-3. **Package Name**: Different Android package name (`com.roqet.driverapp`)
+3. **Package Name**: Different Android package name (`com.roqet.pilotapp`)
 4. **App Name**: "Roqet Driver" instead of "Roqet-app"
 
 ## Troubleshooting

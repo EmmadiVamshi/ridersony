@@ -25,7 +25,6 @@ import { useLocationStore } from '../../store/useLocationStore';
 
 import { logJWTDetails } from '../../utils/jwtDecoder';
 import { formatRidePrice, getRidePrice } from '../../utils/priceUtils';
-import LocationTrackingStatus from '../../components/common/LocationTrackingStatus';
 
 const { width, height } = Dimensions.get('window');
 
@@ -2140,9 +2139,6 @@ export default function HomeScreen() {
       {/* Swipe Gesture Indicator - REMOVED */}
 
       {/* Swipe Instruction - REMOVED */}
-
-      {/* Location Tracking Status (Debug) */}
-      <LocationTrackingStatus visible={__DEV__} />
 
     </SafeAreaView>
     </Animated.View>

@@ -21,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.roqet.driverapp",
+      "package": "com.roqet.pilotapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Mainlogo.jpeg",
         "backgroundColor": "#ffffff"
@@ -68,13 +68,14 @@
       "router": {
         "origin": "https://project-a9dff482.dev.kiki.dev"
       },
-      "eas": {
-        "projectId": "2310a216-9fa2-4e9b-bf24-b2735c3bc4e1"
-      },
       "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_dXNlZnVsLWZsYW1pbmdvLTQxLmNsZXJrLmFjY291bnRzLmRldiQ",
       "EXPO_PUBLIC_SOCKET_URL": "https://testsocketio-roqet.up.railway.app",
       "EXPO_PUBLIC_API_URL": "https://roqet-production.up.railway.app",
-      "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyDHN3SH_ODlqnHcU9Blvv2pLpnDNkg03lU"
-    }
+      "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyDHN3SH_ODlqnHcU9Blvv2pLpnDNkg03lU",
+      "eas": {
+        "projectId": "e88193db-6c4c-445e-9ed7-fb36ac96ca70"
+      }
+    },
+    "owner": "camelq"
   }
 }

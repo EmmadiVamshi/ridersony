@@ -1,4 +1,4 @@
-package com.roqet.driverapp
+package com.roqet.pilotapp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

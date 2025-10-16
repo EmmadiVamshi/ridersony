@@ -1,4 +1,4 @@
-package com.roqet.driverapp
+package com.roqet.pilotapp
 
 import android.app.Application
 import android.content.res.Configuration
